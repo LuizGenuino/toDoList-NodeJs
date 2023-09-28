@@ -10,11 +10,11 @@ module.exports = {
         autoIncrement: true,
         allowNull: false
       },
-      user_id: {
+      category_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users',
+          model: 'categories',
           key: 'id'
         },
         onUpdate: 'CASCADE',
