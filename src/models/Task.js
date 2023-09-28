@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-class Tasks extends Model {
+class Task extends Model {
     static init(connection) {
         super.init({
             title: DataTypes.STRING,
@@ -13,7 +13,8 @@ class Tasks extends Model {
     }
 
     static associate(models) {
-        this.belongsTo(models.User, {foreignKey: 'user_id', as: 'user'});
+        this.belongsTo(models.User, {foreignKey: 'user_id', as: 'user'}); // 1 usuario - N tarefas
+        this.belongsToMany(models.Category, {foreignKey: category_id, through: 'tasks_categories', as: 'categories'}) // N tarefas - N categorias
     }
 }
-module.exports = Tasks;
+module.exports = Task;
