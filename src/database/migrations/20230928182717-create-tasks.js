@@ -25,7 +25,8 @@ module.exports = {
       },
       preference: {
         type: Sequelize.INTEGER,
-        allowNull: true
+        allowNull: false,
+        defaultValue: 3
       },
       user_id: {
         type: Sequelize.INTEGER,
