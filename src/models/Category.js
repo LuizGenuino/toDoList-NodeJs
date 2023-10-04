@@ -7,11 +7,12 @@ class Category extends Model {
             icon: DataTypes.STRING,
         }, {
             sequelize: connection,
+            tableName: 'categories',
         })
     }
 
     static associate(models) {
-        this.belongsToMany(models.Task, {foreignKey: task_id, through: 'tasks_categories', as: 'tasks'})  // N tarefas - N categorias
+        this.belongsToMany(models.Task, {foreignKey: 'task_id', through: 'tasks_categories', as: 'tasks'})  // N tarefas - N categorias
     }
 }
 module.exports = Category;

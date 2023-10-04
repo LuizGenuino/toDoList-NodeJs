@@ -14,7 +14,7 @@ class Task extends Model {
 
     static associate(models) {
         this.belongsTo(models.User, {foreignKey: 'user_id', as: 'user'}); // 1 usuario - N tarefas
-        this.belongsToMany(models.Category, {foreignKey: category_id, through: 'tasks_categories', as: 'categories'}) // N tarefas - N categorias
+        this.belongsToMany(models.Category, {foreignKey: 'category_id', through: 'tasks_categories', as: 'categories'}) // N tarefas - N categorias
     }
 }
 module.exports = Task;

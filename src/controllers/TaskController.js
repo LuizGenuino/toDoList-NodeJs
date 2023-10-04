@@ -1,4 +1,4 @@
-const Tasks = require('../models/Tasks');
+const Task = require('../models/Task');
 const User = require('../models/User');
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
             return res.status(400).json({error: 'User Not Found'});
         }
 
-        const tasks = await Tasks.create({title, subtitle, concluded, preference, user_id})
+        const tasks = await Task.create({title, subtitle, concluded, preference, user_id})
 
         return res.status(200).json(tasks)
     },
