@@ -2,7 +2,7 @@ const Category = require('../models/Category');
 const Task = require('../models/Task');
 
 module.exports = {
-    async store(req, res) {
+    async create(req, res) {
         const { task_id } = req.params;
         const { name, icon } = req.body;
 
@@ -21,7 +21,7 @@ module.exports = {
         return res.status(200).json(category)
     },
 
-    async index(req, res) {
+    async list(req, res) {
         const { task_id } = req.params;
         const task = await Task.findByPk(task_id, {
             include: { association: 'categories', attributes: ['name', 'icon'], through: { attributes: [] } }

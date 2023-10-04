@@ -2,7 +2,7 @@ const Task = require('../models/Task');
 const User = require('../models/User');
 
 module.exports = {
-    async store(req, res) {
+    async create(req, res) {
         const { user_id } = req.params;
         const { title, subtitle, concluded, preference } = req.body;
 
@@ -19,7 +19,7 @@ module.exports = {
         return res.status(200).json(tasks)
     },
 
-    async index(req, res) {
+    async list(req, res) {
         const { user_id } = req.params;
 
         const user = await User.findByPk(user_id, {
