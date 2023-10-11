@@ -23,6 +23,4 @@ routes.post('/categories/:task_id', CategoryController.create)
 routes.get('/categories/:task_id', CategoryController.list);
 routes.delete('/categories/:task_id', CategoryController.delete);
 
-routes.get('/report', ReportController.show)
-
 module.exports = routes
