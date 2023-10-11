@@ -1,15 +1,61 @@
+const { BadRequestError } = require('../helpers/ApiError');
 const User = require('../models/User')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
-    async create(req, res) {
-        const { name, email, cellphone, birthday, password } = req.body;
+    async create(req, res, next) {
+        const { name, email, cellphone, cpf, birthday, password } = req.body;
 
-        const user = await User.create({ name, email, cellphone, birthday, password })
-        return res.status(200).json(user)
+        const userExists = await User.findOne({
+            where: { email, cellphone }
+        })
+
+        if (userExists) {
+            return next(new BadRequestError('Email ou Celular já Cadastrado!')); //o next passa a exeção para frente (onde a função é chamada) e continua o codigo
+        }
+
+        const hashPassword = await bcrypt.hash(password, 10) // 10 é o numero padrão de procressamento da senha
+
+        const newUser = await User.create({ name, email, cellphone, cpf, birthday, password: hashPassword })
+
+        const { password: _, ...user } = newUser.dataValues // estou passando pra constante 'user' todos os dados da 'newUser' menos a 'password'
+
+        return res.status(201).json(user)
     },
 
     async list(req, res) {
         const users = await User.findAll()
         return res.status(200).json(users)
-    }
+    },
+
+    async login(req, res, next) {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({
+            where: { email }
+        })
+
+        if (!user) {
+            return next(new BadRequestError('Email não Cadastrado!'));//o next passa a exeção para frente (onde a função é chamada) e continua o codigo
+        }
+        
+
+        const verifyPassword = await bcrypt.compare(password, user.password)
+
+        if(!verifyPassword){
+            return next(new BadRequestError('Senha Incorreta'));//o next passa a exeção para frente (onde a função é chamada) e continua o codigo
+        }
+
+        const token = jwt.sign({id: user.id}, process.env.JWT_PASSWORD ?? '', {expiresIn: '1d'})
+
+        const { password: _, ...userWithoutPass } = user.dataValues // estou passando pra constante 'user' todos os dados da 'newUser' menos a 'password'
+
+        return res.status(200).json({
+            user: userWithoutPass,
+            token: 'Bearer '+token
+        })
+    },
+
+
 }
