@@ -4,24 +4,34 @@ const TaskController = require('./controllers/TaskController');
 const CategoryController = require('./controllers/CategoryController');
 const { authMiddleware } = require('./middlewares/authMiddleware');
 const LoginController = require('./controllers/LoginController');
+const { userMiddleware } = require('./middlewares/userMiddleware');
+const { TaskMiddleware } = require('./middlewares/taskMiddleware');
+const { CategoryMiddleware } = require('./middlewares/categoryMiddleware');
+
 
 const routes = express.Router()
 
 routes.post('/login', LoginController.login);
 
 
-routes.post('/users', UserController.create);
+routes.post('/user', userMiddleware, UserController.create);
+
 routes.use(authMiddleware) // significa que todas as rotas abaixo utilizaram o authMiddleware
 // uma alternativa para não colocar em cada uma das rotas. EX: routes.get('/users', authMiddleware, UserController.list);
-routes.get('/users', UserController.list);
+routes.get('/user', UserController.list);
+routes.put('/user', userMiddleware, UserController.update);
+routes.delete('/user', UserController.delete);
 
 
-routes.post('/tasks', TaskController.create)
-routes.get('/tasks', TaskController.list);
+routes.get('/task', TaskController.list);
+routes.post('/task', TaskMiddleware, TaskController.create)
+routes.put('/task/:task_id', TaskMiddleware, TaskController.update)
+routes.delete('/task/:task_id', TaskMiddleware, TaskController.delete)
 
 
-routes.post('/categories/:task_id', CategoryController.create)
-routes.get('/categories/:task_id', CategoryController.list);
-routes.delete('/categories/:task_id', CategoryController.delete);
+routes.post('/category', CategoryMiddleware, CategoryController.create)
+routes.put('/category/:id_category', CategoryMiddleware, CategoryController.update)
+routes.get('/category', CategoryController.list);
+routes.delete('/category/:id_category', CategoryController.delete);
 
 module.exports = routes
