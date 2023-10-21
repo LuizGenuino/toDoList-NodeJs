@@ -17,7 +17,7 @@ module.exports = {
             const { id } = jwt.verify(token, process.env.JWT_PASSWORD ?? '')
 
             const user = await User.findByPk(id,{
-                include: {association: 'tasks'}
+                include: {association: 'tasks',  include: { association: 'categories', attributes: ['id','name', 'icon'], through: { attributes: [] } }}
             })
 
 
