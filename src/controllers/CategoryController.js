@@ -3,49 +3,33 @@ const Task = require('../models/Task');
 
 module.exports = {
     async create(req, res) {
-        const { task_id } = req.params;
         const { name, icon } = req.body;
-
-        const task = await Task.findByPk(task_id);
-
-        if (!task) {
-            return res.status(400).json({ error: 'Task Not Found' })
-        }
-
+        const nameLowerCase = name.toLowerCase()
         const [category] = await Category.findOrCreate({ // procure ou crie 
-            where: { name, icon }
+            where: { name: nameLowerCase },
+            defaults: {
+                mame: nameLowerCase, icon
+            }
         })
-
-        await task.addCategory(category)
 
         return res.status(200).json(category)
     },
 
     async list(req, res) {
-        const { task_id } = req.params;
-        const task = await Task.findByPk(task_id, {
-            include: { association: 'categories', attributes: ['name', 'icon'], through: { attributes: [] } }
-        });
-        return res.status(200).json(task)
+        const categoryList = await Category.findAll();
 
+        return res.status(200).json({
+            data: categoryList
+        })
+    },
+
+    async update(req, res) {
+        // apenas sudo pode editar
+        return res.status(200).json({update: false})
     },
 
     async delete(req, res) {
-        const { task_id } = req.params;
-        const { name } = req.body;
-
-        const task = await Task.findByPk(task_id);
-
-        if (!task) {
-            return res.status(400).json({ error: 'Task Not Found' })
-        }
-
-        const category = await Category.findOne({
-            where: { name }
-        })
-
-        await task.removeCategory(category)
-
-        return res.status(200).json()
+        // apenas sudo pode deletar
+        return res.status(200).json({delete: false})
     }
 }
