@@ -30,8 +30,8 @@ routes.delete('/task/:task_id', TaskMiddleware, TaskController.delete)
 
 
 routes.post('/category', CategoryMiddleware, CategoryController.create)
-routes.put('/category/:id_category', CategoryMiddleware, CategoryController.update)
+routes.put('/category/:category_id', CategoryMiddleware, CategoryController.update)
 routes.get('/category', CategoryController.list);
-routes.delete('/category/:id_category', CategoryController.delete);
+routes.delete('/category/:category_id', CategoryController.delete);
 
 module.exports = routes

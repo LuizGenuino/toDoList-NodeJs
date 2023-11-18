@@ -38,13 +38,31 @@ module.exports = {
 
     async update(req, res) {
         try {
-            // apenas sudo pode editar
-            return res.status(200).json({ update: false })
+            const { category_id } = req.params;
+            const editCategory = req.body
+
+            const [rowsAffected, [updatedTask]] = await Category.update(
+                { ...editCategory },
+                {
+                    where: {
+                        id: category_id
+                    },
+                    returning: true //sem isso a função retorna 0 ou 1. Com o returning ela retorna quantidade linhas afetadas e os dados atualizados
+                }
+            );
+
+            if (rowsAffected === 0) {
+                // Isso significa que nenhum registro foi atualizado, o que pode ocorrer se o ID não existir na tabela
+                return next(new NotFoundError('Categoria não encontrada'));
+            }
+
+            return res.status(200).json(updatedTask);
 
 
         } catch (error) {
             console.log("\n\nerro: ", error);
         }
+
 
     },
 
