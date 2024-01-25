@@ -37,6 +37,7 @@ class User extends Model {
 
     static associate(models) {
         this.hasMany(models.Task, { foreignKey: 'user_id', as: 'tasks' });  // 1 usuário - N tarefas
+        this.hasMany(models.Category, { foreignKey: 'user_id', as: 'categories' });  // 1 usuário - N tarefas
     }
 }
 

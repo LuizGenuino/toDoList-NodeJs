@@ -19,8 +19,8 @@ routes.post('/user', userMiddleware, UserController.create);
 routes.use(authMiddleware) // significa que todas as rotas abaixo utilizaram o authMiddleware
 // uma alternativa para não colocar em cada uma das rotas. EX: routes.get('/users', authMiddleware, UserController.list);
 routes.get('/user', UserController.list);
-routes.put('/user', userMiddleware, UserController.update);
-routes.delete('/user', UserController.delete);
+routes.put('/user/:user_id', userMiddleware, UserController.update);
+routes.delete('/user/:user_id', UserController.delete);
 
 
 routes.get('/task', TaskController.list);

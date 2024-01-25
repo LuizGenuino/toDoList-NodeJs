@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { BadRequestError, NotFoundError } = require('../helpers/ApiError');
 const User = require('../models/User')
 const bcrypt = require('bcrypt')
@@ -8,7 +9,7 @@ module.exports = {
             const { name, email, cellphone, cpf, birthday, password } = req.body;
 
             const userExists = await User.findOne({
-                where: { email, cellphone, cpf }
+                where: { [Op.or]: [{ email }, { cellphone }, { cpf }] }
             })
 
             if (userExists) {
@@ -23,22 +24,26 @@ module.exports = {
 
             return res.status(201).json(user)
 
-            
+
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },
 
     async update(req, res, next) {
         try {
+            const { user_id } = req.params;
             const editUser = req.body
 
+            if(+user_id !== req.user.id){
+                return next(new NotFoundError('Usuário não encontrado'));
+            }
             const [rowsAffected, [updatedUser]] = await User.update(
                 { ...editUser },
                 {
                     where: {
-                        id: req.user.id
+                        id: user_id
                     },
                     returning: true //sem isso a função retorna 0 ou 1. Com o returning ela retorna quantidade linhas afetadas e os dados atualizados
                 }
@@ -49,27 +54,34 @@ module.exports = {
                 return next(new NotFoundError('Usuário não encontrado'));
             }
 
-            // O registro atualizado é armazenado em 'updatedUser'
-            return res.status(200).json(updatedUser);
+            const { password: _, ...userWithoutPass } = updatedUser.dataValues // estou passando pra constante  todos os dados da 'updatedUser' menos a 'password'
+
+            return res.status(200).json(userWithoutPass);
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },
 
     async delete(req, res, next) {
         try {
+            const { user_id } = req.params;
+
+            if(+user_id !== req.user.id){
+                return next(new NotFoundError('Usuário não encontrado'));
+            }
+
             const deleteUser = await User.destroy({
-                where: { id: req.user.id }
+                where: { id: user_id }
             })
 
             return res.status(200).json({ deleted: true })
 
-            
+
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },
@@ -77,15 +89,15 @@ module.exports = {
     //operações futuras do sudo
     async list(req, res) {
         try {
-            const users = await User.findAll({
-                attributes: { exclude: ['password'] } // exclui a coluna password dos dados dos usuarios
-            });
+            // const users = await User.findAll({
+            //     attributes: { exclude: ['password'] } // exclui a coluna password dos dados dos usuarios
+            // });
 
-            return res.status(200).json(users)
+            return res.status(200).json([])
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },

@@ -18,6 +18,8 @@ class Category extends Model {
     }
 
     static associate(models) {
+        this.belongsTo(models.User, {foreignKey: 'user_id', as: 'user',}); // 1 usuário - N tarefas
+
         this.belongsToMany(models.Task, { foreignKey: 'category_id', through: 'tasks_categories', as: 'tasks' })  // N tarefas - N categorias
     }
 }

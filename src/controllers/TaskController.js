@@ -1,7 +1,5 @@
 const { NotFoundError } = require('../helpers/ApiError');
-const Category = require('../models/Category');
 const Task = require('../models/Task');
-const User = require('../models/User');
 
 
 module.exports = {
@@ -30,7 +28,7 @@ module.exports = {
 
             
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
     },
 
@@ -41,7 +39,7 @@ module.exports = {
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
     },
 
@@ -80,7 +78,7 @@ module.exports = {
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },
@@ -100,7 +98,7 @@ module.exports = {
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     }

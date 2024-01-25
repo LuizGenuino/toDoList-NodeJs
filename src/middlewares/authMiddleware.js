@@ -16,9 +16,24 @@ module.exports = {
 
             const { id } = jwt.verify(token, process.env.JWT_PASSWORD ?? '')
 
-            const user = await User.findByPk(id,{
-                include: {association: 'tasks',  include: { association: 'categories', attributes: ['id','name', 'icon'], through: { attributes: [] } }}
-            })
+            const user = await User.findByPk(id, {
+                include: [
+                    {
+                        association: 'tasks',
+                        include: [
+                            {
+                                association: 'categories',
+                                attributes: ['id', 'name', 'icon'],
+                                through: { attributes: [] }
+                            }
+                        ]
+                    },
+                    {
+                        association: 'categories'
+                    }
+                ]
+            });
+
 
 
             if (!user) {
@@ -32,6 +47,7 @@ module.exports = {
         } catch (error) {
             // Se ocorrer um erro na verificação do token, capture a exceção
             // e retorne uma resposta de erro personalizada
+            console.log("error:", error);
             return next(new UnauthorizedError('Token inválido'));
         }
 

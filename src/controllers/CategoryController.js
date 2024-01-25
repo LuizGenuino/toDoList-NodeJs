@@ -1,5 +1,4 @@
 const Category = require('../models/Category');
-const Task = require('../models/Task');
 
 module.exports = {
     async create(req, res) {
@@ -7,33 +6,29 @@ module.exports = {
             const { name, icon } = req.body;
             const nameLowerCase = name.toLowerCase()
             const [category] = await Category.findOrCreate({ // procure ou crie 
-                where: { name: nameLowerCase },
+                where: { name: nameLowerCase, user_id: req.user.id },
                 defaults: {
-                    mame: nameLowerCase, icon
+                    mame: nameLowerCase, icon, user_id: req.user.id 
                 }
             })
             return res.status(200).json(category)
 
             
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     },
 
     async list(req, res) {
         try {
-            const categoryList = await Category.findAll();
-
-            return res.status(200).json({
-                data: categoryList
-            })
+            // como a função de validação do token no "authMiddleware" ja retornar os dados que precisamos apenas retornamos os dados aqui
+            return res.status(200).json(req.user.categories)
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
-
     },
 
     async update(req, res) {
@@ -41,7 +36,7 @@ module.exports = {
             const { category_id } = req.params;
             const editCategory = req.body
 
-            const [rowsAffected, [updatedTask]] = await Category.update(
+            const [rowsAffected, [updatedCategory]] = await Category.update(
                 { ...editCategory },
                 {
                     where: {
@@ -56,11 +51,11 @@ module.exports = {
                 return next(new NotFoundError('Categoria não encontrada'));
             }
 
-            return res.status(200).json(updatedTask);
+            return res.status(200).json(updatedCategory);
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
 
@@ -68,12 +63,20 @@ module.exports = {
 
     async delete(req, res) {
         try {
-            // apenas sudo pode deletar
-            return res.status(200).json({ delete: false })
+            const { category_id } = req.params;
+
+            const deleteCategory = await Category.destroy({
+                where: { id: category_id }
+            })
+
+            if (!deleteCategory) {
+                return res.status(404).json({ deleted: false })
+            }
+            return res.status(200).json({ deleted: true })
 
 
         } catch (error) {
-            console.log("\n\nerro: ", error);
+            console.log("erro: ", error);
         }
 
     }
